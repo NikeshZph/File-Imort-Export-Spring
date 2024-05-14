@@ -1,10 +1,14 @@
 package org.example.fileimport.service.impl;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.example.fileimport.dto.EmployeeDto;
 import org.example.fileimport.entity.Employee;
 import org.example.fileimport.file.ExcelHelper;
 import org.example.fileimport.repo.EmpRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,9 +53,26 @@ public class FileService {
          return  empRepo.save(employee);
     }
 
-    public List<Employee> findbysearch(String searchtext)
+    public List<Employee> searchEmployees(String searchtext) {
+        if (StringUtils.isEmpty(searchtext)) {
+            return empRepo.findAllEmployees();
+        } else {
+            return empRepo.findEmployeeBySearch(searchtext);
+        }
+
+    }
+
+
+//    public List<Employee> findEmployeeBySorting(String field)
+//    {
+//        return empRepo.findAll(Sort.by(Sort.Direction.ASC,field));
+//    }
+
+
+    public Page<Employee> findEmployeeByPagination(int offset,int pageSize,String field)
     {
-       return empRepo.findEmployeeBySearch(searchtext);
+        Page<Employee> employees= empRepo.findAll(PageRequest.of(offset,pageSize,Sort.by(Sort.Direction.ASC,field)));
+        return employees;
     }
 
 

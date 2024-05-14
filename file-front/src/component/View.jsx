@@ -9,6 +9,7 @@ const View = () => {
     department: '',
     address: ''
   });
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -16,7 +17,11 @@ const View = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/excel/employee');
+      let url = 'api/excel/employee';
+      if (searchQuery) {
+        url = `/api/excel/search?query=${searchQuery}`;
+      }
+      const response = await axiosInstance.get(url);
       setEmployees(response.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
@@ -26,6 +31,10 @@ const View = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee({ ...newEmployee, [name]: value });
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleAddEmployee = async () => {
@@ -38,9 +47,28 @@ const View = () => {
     }
   };
 
+  const handleSearch = async () => {
+    try {
+      fetchData(); 
+    } catch (error) {
+      console.error('Error searching employees:', error);
+    }
+  };
+
   return (
     <div className="container">
-      <h1>Employee List</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1>Employee List</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+          <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+        </div>
+      </div>
       <table className="table">
         <thead>
           <tr>

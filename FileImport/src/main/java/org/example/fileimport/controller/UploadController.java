@@ -9,6 +9,7 @@ import org.example.fileimport.response.ResponseMessage;
 import org.example.fileimport.service.impl.FileService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,15 +48,15 @@ public class UploadController {
     }
 
     @GetMapping("/employee")
-    public ResponseEntity<List<Employee>> getAllTutorials() {
+    public ResponseEntity<List<Employee>> getAllEmployee() {
         try {
-            List<Employee> tutorials = fileService.getAllEmployee();
+            List<Employee> employee = fileService.getAllEmployee();
 
-            if (tutorials.isEmpty()) {
+            if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return new ResponseEntity<>(tutorials, HttpStatus.OK);
+            return new ResponseEntity<>(employee, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -82,8 +83,25 @@ public class UploadController {
     @GetMapping(value = "/search")
     public List<Employee> getSearch(@RequestParam String searchtext)
     {
-        return fileService.findbysearch(searchtext);
+        return fileService.searchEmployees(searchtext);
     }
+
+//    @GetMapping(value = "/{field}")
+//    public ResponseEntity<List<Employee>> getSort(@PathVariable String field)
+//    {
+//
+//        List<Employee> employees= fileService.findEmployeeBySorting(field);
+//        return new ResponseEntity<>(employees, HttpStatus.OK);
+//    }
+
+    @GetMapping(value = "/pagination/{offset}/{pageSize}/{field}")
+    public ResponseEntity<Page<Employee>> getPagination(@PathVariable int offset, @PathVariable int pageSize,@PathVariable String field)
+    {
+
+        Page<Employee> employees= fileService.findEmployeeByPagination(offset,pageSize,field);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
 
 }
 

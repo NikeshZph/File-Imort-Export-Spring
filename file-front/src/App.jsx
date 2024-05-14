@@ -8,6 +8,7 @@ import View from './component/View';
 import Form from './component/Form';
 import SocialLogin from './component/Login';
 import FormDataPage from './component/FormView';
+import Pagination from './component/ViewPage.jsx';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
           <Route path = "/form" element = {<Form />} />
           <Route path = "/login" element = {<SocialLogin />} />
           <Route path = "/formview" element = {<FormDataPage />} />
+          <Route path = "/page" element = {<Pagination />} />
+
 
         </Routes>
     </BrowserRouter>
