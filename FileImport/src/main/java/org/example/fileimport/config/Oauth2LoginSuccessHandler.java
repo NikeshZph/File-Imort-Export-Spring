@@ -24,7 +24,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class Oauth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-    
+
     private final UserService userService;
     @Value("${frontend.url}")
     private String frontendUrl;
