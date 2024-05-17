@@ -1,5 +1,7 @@
 package org.example.fileimport.file;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,14 +15,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
+@Slf4j
+
 public class ExcelHelper {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    static String[] HEADERS = {"id", "name", "department", "address",};
+    static String[] HEADERS = {"id", "name", "department", "address", "salary"};
     static String SHEET = "employees";
 
     public static boolean hasExcelFormat(MultipartFile file) {
-        return TYPE.equals(file.getContentType());
-    }
+
+            return TYPE.equals(file.getContentType());
+
+        }
+
 
     public static List<Employee> excelPractice(InputStream is) {
         try {
@@ -55,6 +63,10 @@ public class ExcelHelper {
                             break;
                         case 3:
                             employee.setAddress(cell.getStringCellValue());
+                            break;
+
+                        case 4:
+                            employee.setSalary(cell.getNumericCellValue());
                             break;
                         default:
                             break;
@@ -91,6 +103,8 @@ public class ExcelHelper {
                 row.createCell(1).setCellValue(employee.getName());
                 row.createCell(2).setCellValue(employee.getDepartment());
                 row.createCell(3).setCellValue(employee.getAddress());
+                row.createCell(4).setCellValue(employee.getSalary());
+
             }
 
             workbook.write(out);

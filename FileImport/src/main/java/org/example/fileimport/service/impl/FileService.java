@@ -38,7 +38,6 @@ public class FileService {
 
     public ByteArrayInputStream load() {
         List<Employee> employees = empRepo.findAll();
-
         ByteArrayInputStream in = ExcelHelper.toExcel(employees);
         return in;
     }
@@ -50,6 +49,7 @@ public class FileService {
         employee.setDepartment(employeeDto.getDepartment());
         employee.setAddress(employeeDto.getAddress());
         employee.setName(employeeDto.getName());
+        employee.setSalary(employeeDto.getSalary());
          return  empRepo.save(employee);
     }
 

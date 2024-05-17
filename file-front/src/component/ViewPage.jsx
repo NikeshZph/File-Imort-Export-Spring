@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import axiosInstance from '../axiosInstance';
 import { Table, Button } from 'react-bootstrap';
 

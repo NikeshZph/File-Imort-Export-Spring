@@ -9,6 +9,7 @@ import {
   MDBRow
 } from 'mdb-react-ui-kit';
 import axiosInstance from '../axiosInstance';
+import { ToastContainer, toast } from 'react-toastify';
 
 function Form() {
   const [formData, setFormData] = useState({
@@ -54,6 +55,7 @@ function Form() {
 
       const response = await axiosInstance.post('/form/save', formDataToSend, { headers });
       console.log(response.data);
+      toast.success(response.data.message)
       setSubmittedDate(new Date());
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -113,6 +115,10 @@ function Form() {
                 <option value='Canada'>Canada</option>
               </select>
             </div>
+
+            <ToastContainer>
+              
+            </ToastContainer>
             <MDBBtn className='mb-4 w-100 gradient-custom-4' size='lg' type='submit'>Register</MDBBtn>
           </form>
           {submittedDate && (

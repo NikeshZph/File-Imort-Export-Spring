@@ -2,9 +2,11 @@ package org.example.fileimport.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.compress.utils.FileNameUtils;
 import org.example.fileimport.dto.EmployeeDto;
 import org.example.fileimport.entity.Employee;
 import org.example.fileimport.file.ExcelHelper;
+import org.example.fileimport.response.GenericResponse;
 import org.example.fileimport.response.ResponseMessage;
 import org.example.fileimport.service.impl.FileService;
 import org.springframework.core.io.InputStreamResource;
@@ -26,41 +28,68 @@ import java.util.List;
 
 public class UploadController {
 
- private final FileService fileService;
+    private final FileService fileService;
+
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
 
+
+
         if (ExcelHelper.hasExcelFormat(file)) {
             try {
                 fileService.save(file);
-
                 message = "Uploaded the file successfully: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
             } catch (Exception e) {
-                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+
+                message = "Could not not upload the file due to xls " + file.getOriginalFilename() + "!";
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
+
         }
 
-        message = "Please upload an excel file!";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
-    }
 
-    @GetMapping("/employee")
-    public ResponseEntity<List<Employee>> getAllEmployee() {
-        try {
-            List<Employee> employee = fileService.getAllEmployee();
-
-            if (employee.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(employee, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        else {
+            message = "Please upload an excel file!";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
         }
-    }
+        }
+
+
+        @GetMapping("/employee")
+        public ResponseEntity<List<Employee>> getAllEmployee()
+        {
+            return ResponseEntity.status(HttpStatus.OK).body(fileService.getAllEmployee());
+        }
+
+
+//    @GetMapping("/employee")
+//    public GenericResponse<List<Employee>> getAllEmployee() {
+//        try {
+//            List<Employee> employee = fileService.getAllEmployee();
+//
+//            if (employee.isEmpty()) {
+//                return GenericResponse.<List<Employee>>builder()
+//                        .status(false)
+//                        .message("Employee is empty")
+////                        .data(employee)
+//                        .build();
+//            }
+//
+//            return GenericResponse.<List<Employee>>builder()
+//                    .message("User is successfully obtained")
+//                    .data(employee)
+//                    .status(true)
+//                    .build();
+//
+//        } catch (Exception e) {
+//            return GenericResponse.<List<Employee>>builder()
+//                    .status(false)
+//                    .message("Error occur")
+//                    .build();
+//        }
+//    }
 
 
     @GetMapping("/download")
@@ -86,13 +115,6 @@ public class UploadController {
         return fileService.searchEmployees(searchtext);
     }
 
-//    @GetMapping(value = "/{field}")
-//    public ResponseEntity<List<Employee>> getSort(@PathVariable String field)
-//    {
-//
-//        List<Employee> employees= fileService.findEmployeeBySorting(field);
-//        return new ResponseEntity<>(employees, HttpStatus.OK);
-//    }
 
     @GetMapping(value = "/pagination/{offset}/{pageSize}/{field}")
     public ResponseEntity<Page<Employee>> getPagination(@PathVariable int offset, @PathVariable int pageSize,@PathVariable String field)

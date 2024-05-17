@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import axiosInstance from '../axiosInstance';
 
 const View = () => {
@@ -7,7 +6,8 @@ const View = () => {
   const [newEmployee, setNewEmployee] = useState({
     name: '',
     department: '',
-    address: ''
+    address: '',
+    salary: '' 
   });
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -19,7 +19,7 @@ const View = () => {
     try {
       let url = 'api/excel/employee';
       if (searchQuery) {
-        url = `/api/excel/search?query=${searchQuery}`;
+        url = `/api/excel/search?searchtext=${searchQuery}`;
       }
       const response = await axiosInstance.get(url);
       setEmployees(response.data);
@@ -40,7 +40,7 @@ const View = () => {
   const handleAddEmployee = async () => {
     try {
       await axiosInstance.post('/api/excel/add', newEmployee);
-      setNewEmployee({ name: '', department: '', address: '' });
+      setNewEmployee({ name: '', department: '', address: '', salary: '' }); 
       fetchData();
     } catch (error) {
       console.error('Error adding employee:', error);
@@ -49,7 +49,7 @@ const View = () => {
 
   const handleSearch = async () => {
     try {
-      fetchData(); 
+      fetchData();
     } catch (error) {
       console.error('Error searching employees:', error);
     }
@@ -76,6 +76,7 @@ const View = () => {
             <th>Name</th>
             <th>Department</th>
             <th>Address</th>
+            <th>Salary</th> 
           </tr>
         </thead>
         <tbody>
@@ -85,6 +86,7 @@ const View = () => {
               <td>{employee.name}</td>
               <td>{employee.department}</td>
               <td>{employee.address}</td>
+              <td>{employee.salary}</td> 
             </tr>
           ))}
         </tbody>
@@ -111,6 +113,13 @@ const View = () => {
           name="address"
           placeholder="Address"
           value={newEmployee.address}
+          onChange={handleInputChange}
+        />
+        <input
+          type="number" 
+          name="salary"
+          placeholder="Salary"
+          value={newEmployee.salary}
           onChange={handleInputChange}
         />
         <button className="btn btn-primary" onClick={handleAddEmployee}>Add</button>
