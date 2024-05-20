@@ -1,7 +1,6 @@
 package org.example.fileimport.controller;
 
 
-import jakarta.persistence.GeneratedValue;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

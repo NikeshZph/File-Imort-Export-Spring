@@ -24,10 +24,8 @@ public class FormEntity {
 
     private Integer id;
     @NotEmpty
-    @Pattern(regexp = "^([a-zA-Z])$")
     private String lname;
 
-    @Pattern(regexp = "^([a-zA-Z])$")
     @NotEmpty
     private String fname;
 

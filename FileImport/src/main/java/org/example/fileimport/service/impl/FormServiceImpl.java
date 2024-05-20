@@ -40,15 +40,15 @@ public class FormServiceImpl implements FormService {
         formEntity.setDob(formDto.getDob());
         formEntity.setSubmittime(formDto.getSubmittime());
         formEntity.setSubmittedby(formDto.getSubmittedby());
-      return formRepo.save(formEntity);
+        return formRepo.save(formEntity);
     }
 
     @Override
     public List<FormEntity> getall() {
-            List<FormEntity> formEntities = new ArrayList<>();
-            formRepo.findAll()
-                    .forEach(formEntities :: add);
-            return formEntities;
+        List<FormEntity> formEntities = new ArrayList<>();
+        formRepo.findAll()
+                .forEach(formEntities :: add);
+        return formEntities;
     }
 
     @Override
@@ -71,7 +71,6 @@ public class FormServiceImpl implements FormService {
         row.createCell(9).setCellValue("submittedby");
         row.createCell(10).setCellValue("submittedtime");
 
-
         int dataRowIndex= 1;
         for(FormEntity formEntity:formEntities)
         {
@@ -88,14 +87,12 @@ public class FormServiceImpl implements FormService {
             datarow.createCell(9).setCellValue(formEntity.getSubmittedby());
 
             datarow.createCell(10).setCellValue(formEntity.getSubmittime());
-
-
             dataRowIndex++;
         }
-         ServletOutputStream ops= httpServletResponse.getOutputStream();
-         workbook.write(ops);
-         workbook.close();
-         ops.close();
+        ServletOutputStream ops= httpServletResponse.getOutputStream();
+        workbook.write(ops);
+        workbook.close();
+        ops.close();
 
     }
 }

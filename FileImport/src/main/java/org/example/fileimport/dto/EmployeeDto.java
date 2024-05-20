@@ -8,10 +8,7 @@ import lombok.Data;
 public class EmployeeDto {
 
     private String name;
-
     private Double salary;
-
     private String department;
-
     private String address;
 }

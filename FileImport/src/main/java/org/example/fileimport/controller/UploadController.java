@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.example.fileimport.dto.EmployeeDto;
 import org.example.fileimport.entity.Employee;
+import org.example.fileimport.exception.ExcelValidationException;
 import org.example.fileimport.file.ExcelHelper;
 import org.example.fileimport.response.GenericResponse;
 import org.example.fileimport.response.ResponseMessage;
@@ -34,64 +35,29 @@ public class UploadController {
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
 
-
-
         if (ExcelHelper.hasExcelFormat(file)) {
             try {
                 fileService.save(file);
                 message = "Uploaded the file successfully: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            } catch (ExcelValidationException e) {
+                message = "Excel validation error: " + e.getMessage();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
             } catch (Exception e) {
-
-                message = "Could not not upload the file due to xls " + file.getOriginalFilename() + "!";
+                message = "Could not upload the file: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
-
-        }
-
-
-        else {
-            message = "Please upload an excel file!";
+        } else {
+            message = "Please upload an Excel file!";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
         }
-        }
+    }
 
-
-        @GetMapping("/employee")
+    @GetMapping("/employee")
         public ResponseEntity<List<Employee>> getAllEmployee()
         {
             return ResponseEntity.status(HttpStatus.OK).body(fileService.getAllEmployee());
         }
-
-
-//    @GetMapping("/employee")
-//    public GenericResponse<List<Employee>> getAllEmployee() {
-//        try {
-//            List<Employee> employee = fileService.getAllEmployee();
-//
-//            if (employee.isEmpty()) {
-//                return GenericResponse.<List<Employee>>builder()
-//                        .status(false)
-//                        .message("Employee is empty")
-////                        .data(employee)
-//                        .build();
-//            }
-//
-//            return GenericResponse.<List<Employee>>builder()
-//                    .message("User is successfully obtained")
-//                    .data(employee)
-//                    .status(true)
-//                    .build();
-//
-//        } catch (Exception e) {
-//            return GenericResponse.<List<Employee>>builder()
-//                    .status(false)
-//                    .message("Error occur")
-//                    .build();
-//        }
-//    }
-
-
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile() {
         String filename = "employee.xlsx";
@@ -102,6 +68,18 @@ public class UploadController {
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
     }
+
+
+    @GetMapping("/sample")
+    public ResponseEntity<Resource> getSample()
+    {
+        String filename= "Sample.xlsx";
+        InputStreamResource file = new InputStreamResource(fileService.sample());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);    }
 
     @PostMapping("/add")
     public void addEmployees(@RequestBody EmployeeDto employeeDto){
@@ -123,8 +101,6 @@ public class UploadController {
         Page<Employee> employees= fileService.findEmployeeByPagination(offset,pageSize,field);
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
-
-
 }
 
 

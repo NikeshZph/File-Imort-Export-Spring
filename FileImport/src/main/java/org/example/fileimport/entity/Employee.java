@@ -17,14 +17,10 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotNull(message = "Name cannot be blank")
     private String name;
-    @NotNull(message = "DepartMent cannot be blank")
     private String department;
-    @NotNull(message = "Address cannot be blank")
-    private String address;
 
-    @NumberFormat
+    private String address;
     private Double salary;
 
 }

@@ -42,6 +42,12 @@ public class FileService {
         return in;
     }
 
+    public ByteArrayInputStream sample()
+    {
+        ByteArrayInputStream in = ExcelHelper.createExcelTemplate();
+        return  in;
+    }
+
     public Employee add(EmployeeDto employeeDto)
     {
 
