@@ -24,77 +24,141 @@ public class ExcelHelper {
     public static boolean hasExcelFormat(MultipartFile file) {
         return TYPE.equals(file.getContentType());
     }
-
     public static List<Employee> excelPractice(InputStream is) {
-        try {
-            Workbook workbook = WorkbookFactory.create(is);
+        try (Workbook workbook = WorkbookFactory.create(is)) {
             Sheet sheet = workbook.getSheetAt(0);
-
-            Iterator<Row> rows = sheet.iterator();
             List<Employee> employees = new ArrayList<>();
-
+            Iterator<Row> rows = sheet.iterator();
             int rowNumber = 0;
+
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
-                if (rowNumber == 0) {
-                    rowNumber++;
-                    continue;
-                }
-                Iterator<Cell> cellIterator = currentRow.iterator();
+                if (rowNumber++ == 0) continue;
                 Employee employee = new Employee();
-                int cellId = 0;
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    switch (cellId) {
-                        case 0:
-                            if (cell.getCellType() == CellType.NUMERIC) {
-                                employee.setId((int) cell.getNumericCellValue());
-                            } else {
-                                throw new ExcelValidationException("Value doesn't exist for ID at row " + (rowNumber + 1));
-                            }
-                            break;
-                        case 1:
-                            if (cell.getCellType() == CellType.STRING) {
-                                employee.setName(cell.getStringCellValue());
-                            } else {
-                                throw new ExcelValidationException("Value doesn't exist for Name at row " + (rowNumber + 1));
-                            }
-                            break;
-                        case 2:
-                            if (cell.getCellType() == CellType.STRING) {
-                                employee.setDepartment(cell.getStringCellValue());
-                            } else {
-                                throw new ExcelValidationException("Value doesn't exist for Department at row " + (rowNumber + 1));
-                            }
-                            break;
-                        case 3:
-                            if (cell.getCellType() == CellType.STRING) {
-                                employee.setAddress(cell.getStringCellValue());
-                            } else {
-                                throw new ExcelValidationException("Value doesn't exist for Address at row " + (rowNumber + 1));
-                            }
-                            break;
-                        case 4:
-                            if (cell.getCellType() == CellType.NUMERIC) {
-                                employee.setSalary(cell.getNumericCellValue());
-                            } else {
-                                throw new ExcelValidationException("Value doesn't exist for Salary at row " + (rowNumber + 1));
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    cellId++;
+                for (int cellId = 0; cellId < HEADERS.length; cellId++) {
+                    Cell cell = currentRow.getCell(cellId, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    setEmployeeField(employee, cell, cellId, rowNumber);
                 }
                 employees.add(employee);
-                rowNumber++;
             }
-            workbook.close();
             return employees;
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse Excel file: " + e.getMessage());
         }
     }
+
+    private static void setEmployeeField(Employee employee, Cell cell, int cellId, int rowNumber) {
+        switch (cellId) {
+            case 0:
+                if (cell.getCellType() == CellType.NUMERIC) {
+                    employee.setId((int) cell.getNumericCellValue());
+                } else {
+                    throw new ExcelValidationException("Invalid value for ID at row " + rowNumber);
+                }
+                break;
+            case 1:
+                if (cell.getCellType() == CellType.STRING) {
+                    employee.setName(cell.getStringCellValue());
+                } else {
+                    throw new ExcelValidationException("Invalid value for Name at row " + rowNumber);
+                }
+                break;
+            case 2:
+                if (cell.getCellType() == CellType.STRING) {
+                    employee.setDepartment(cell.getStringCellValue());
+                } else {
+                    throw new ExcelValidationException("Invalid value for Department at row " + rowNumber);
+                }
+                break;
+            case 3:
+                if (cell.getCellType() == CellType.STRING) {
+                    employee.setAddress(cell.getStringCellValue());
+                } else {
+                    throw new ExcelValidationException("Invalid value for Address at row " + rowNumber);
+                }
+                break;
+            case 4:
+                if (cell.getCellType() == CellType.NUMERIC) {
+                    employee.setSalary(cell.getNumericCellValue());
+                } else {
+                    throw new ExcelValidationException("Invalid value for Salary at row " + rowNumber);
+                }
+                break;
+            default:
+                throw new ExcelValidationException("Unexpected cellId: " + cellId);
+        }
+    }
+
+//    public static List<Employee> excelPractice(InputStream is) {
+//        try {
+//            Workbook workbook = WorkbookFactory.create(is);
+//            Sheet sheet = workbook.getSheetAt(0);
+//
+//            Iterator<Row> rows = sheet.iterator();
+//            List<Employee> employees = new ArrayList<>();
+//
+//            int rowNumber = 0;
+//            while (rows.hasNext()) {
+//                Row currentRow = rows.next();
+//                if (rowNumber == 0) {
+//                    rowNumber++;
+//                    continue;
+//                }
+//                Iterator<Cell> cellIterator = currentRow.iterator();
+//                Employee employee = new Employee();
+//                int cellId = 0;
+//                while (cellIterator.hasNext()) {
+//                    Cell cell = cellIterator.next();
+//                    switch (cellId) {
+//                        case 0:
+//                            if (cell.getCellType() == CellType.NUMERIC) {
+//                                employee.setId((int) cell.getNumericCellValue());
+//                            } else {
+//                                throw new ExcelValidationException("Value doesn't exist for ID at row " + (rowNumber + 1));
+//                            }
+//                            break;
+//                        case 1:
+//                            if (cell.getCellType() == CellType.STRING) {
+//                                employee.setName(cell.getStringCellValue());
+//                            } else {
+//                                throw new ExcelValidationException("Value doesn't exist for Name at row " + (rowNumber + 1));
+//                            }
+//                            break;
+//                        case 2:
+//                            if (cell.getCellType() == CellType.STRING) {
+//                                employee.setDepartment(cell.getStringCellValue());
+//                            } else {
+//                                throw new ExcelValidationException("Value doesn't exist for Department at row " + (rowNumber + 1));
+//                            }
+//                            break;
+//                        case 3:
+//                            if (cell.getCellType() == CellType.STRING) {
+//                                employee.setAddress(cell.getStringCellValue());
+//                            } else {
+//                                throw new ExcelValidationException("Value doesn't exist for Address at row " + (rowNumber + 1));
+//                            }
+//                            break;
+//                        case 4:
+//                            if (cell.getCellType() == CellType.NUMERIC) {
+//                                employee.setSalary(cell.getNumericCellValue());
+//                            } else {
+//                                throw new ExcelValidationException("Value doesn't exist for Salary at row " + (rowNumber + 1));
+//                            }
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//                    cellId++;
+//                }
+//                employees.add(employee);
+//                rowNumber++;
+//            }
+//            workbook.close();
+//            return employees;
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to parse Excel file: " + e.getMessage());
+//        }
+//    }
 
 
     public static ByteArrayInputStream toExcel(List<Employee> employees) {
